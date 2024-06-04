@@ -1,99 +1,143 @@
-// demo.c
+// demo.c 
 
 #include <stdio.h>
-#include "dynstr.h"
+#include <stdlib.h>
+#include "lib/dynstr.h"
 
-int main() {
+int main () {
   int retVal = 0;
 
-  DynStr_t * str1 = NULL;
-  DynStr_t * str2 = NULL;
-  DynStr_t * str3 = NULL;
-  
+  DynStr_t * dStr1 = NULL;
+  DynStr_t * dStr2 = NULL;
+  DynStr_t * dStr3 = NULL;
+  DynStr_t * dStr4 = NULL;
+  DynStr_t * dStrSlice = NULL;
+  char * cStr = NULL;
+
   int compareResult;
 
-  // Initialize dynamic str1 from a literal
+  printf("Creating a DynStr from a C string literal.\n");
 
-  if (DynStr_fromLiteral(&str1, "Hello, ") != 0) {
-    fprintf(stderr, "Failed to initialize dynamic string from literal.\n");
+  if (DynStr_fromCStr(&dStr1, "Hello, dynamic strings!") != 0) {
+    fprintf(stderr, "ERROR: Failed to create dStr1.\n");
     
     retVal = -1;
     goto cleanUp;
   }
 
-  // Concatenate another literal
+  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
 
-  if (DynStr_concatLiteral(str1, "World") != 0) {
-    fprintf(stderr, "Failed to concatenate literal.\n");
+  printf("Creating another DynStr from a C string literal.\n");
+
+  if (DynStr_fromCStr(&dStr2, " Another dynamic string!") != 0) {
+    fprintf(stderr, "ERROR: Failed to create dStr2.\n");
+
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  printf("dStr2: %.*s\n\n", (int) dStr2->count, dStr2->content);
+
+  printf("Concatenating dStr2 to dStr1.\n");
+
+  if (DynStr_concatDynStr(dStr1, dStr2) != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr1.\n");
+    
+    retVal = -1;
+    goto cleanUp;
+  }
+  
+  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
+
+  printf("Concatenating part of dStr2 to dStr1.\n");
+
+  if (
+    DynStr_concatDynStrOpt(
+      dStr1, dStr2, (DynStrOptions_t) {
+        .offset = 16, 
+        .count = 8, 
+      }) != 0
+  ) {
+    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr1.\n");
+    
+    retVal = -1;
+    goto cleanUp;
+  }
+  
+  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
+
+  printf("Creating a slice from dStr1.\n");
+
+  if (
+    DynStr_fromDynStrOpt(
+      &dStrSlice, dStr1, (DynStrOptions_t) {
+        .offset = 7, 
+        .count = 7, 
+      }) != 0
+  ) {
+    fprintf(stderr, "ERROR: Failed to create slice from dStr1.\n");
     
     retVal = -1;
     goto cleanUp;
   }
 
-  // Print it
+  printf("dStrSlice: %.*s\n\n", (int) dStrSlice->count, dStrSlice->content);
 
-  printf("String 1: %.*s\n", (int) str1->count, str1->content);
+  printf("Creating another DynStr from the slice.\n");
 
-  // Initialize str2 from str1
-
-  if (DynStr_fromDynStr(&str2, str1) != 0) {
-    fprintf(stderr, "Failed to initialize dynamic string from another dynamic string.\n");
+  if (DynStr_fromDynStr(&dStr3, dStrSlice) != 0) {
+    fprintf(stderr, "ERROR: Failed to create dStr3 from dStrSlice.\n");
     
     retVal = -1;
     goto cleanUp;
   }
 
-  // Concatenate a literal
+  printf("dStr3: %.*s\n\n", (int) dStr3->count, dStr3->content);
 
-  if (DynStr_concatLiteral(str2, "!!!") != 0) {
-    fprintf(stderr, "Failed to concatenate literal.\n");
+  printf("Comparing the last 2.\n");
+
+  if (DynStr_compare(dStrSlice, dStr3, &compareResult) != 0) {
+    fprintf(stderr, "ERROR: Failed to compare dStrSlice and dStr3.\n");
+
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  printf("dStrSlice == dStr3: %s\n\n", compareResult ? "Equal" : "Not Equal");
+
+  printf("Creating one last DynStr from a C string literal.\n");
+
+  if (DynStr_fromCStr(&dStr4, "Thank you :)") != 0) {
+    fprintf(stderr, "ERROR: Failed to create dStr4.\n");
     
     retVal = -1;
     goto cleanUp;
   }
 
-  // Ensure null termination 
+  printf("dStr4: %.*s\n\n", (int) dStr4->count, dStr4->content);
 
-  if (DynStr_ensureNullTermination(str2) != 0) {
-    fprintf(stderr, "Failed to ensure null termination.\n");
+  printf("Finally, creating a C string from dStr4.\n");
+
+  if (DynStr_toCStr(dStr4, &cStr) != 0) {
+    fprintf(stderr, "ERROR: Failed to create cStr from dStr4.\n");
     
     retVal = -1;
     goto cleanUp;
   }
 
-  // Print it
-
-  printf("String 2: %s\n", str2->content);
-
-  // Initialize str3 from a literal
-
-  if (DynStr_fromLiteral(&str3, "Hello, World!!!") != 0) {
-    fprintf(stderr, "Failed to initialize dynamic string from literal.\n");
-    
-    retVal = -1;
-    goto cleanUp;
-  }
-
-  // Print it
-
-  printf("String 3: %.*s\n", (int) str3->count, str3->content);
-
-  // Compare str2 and str3
-
-  if (DynStr_compare(str2, str3, &compareResult) != 0) {
-    fprintf(stderr, "Failed to compare dynamic strings.\n");
-    
-    retVal = -1;
-    goto cleanUp;
-  }
-
-  printf("String 2 == String 3: %s\n", compareResult ? "Equal" : "Not Equal");
+  printf("cStr: %s\n\n", cStr);
 
   cleanUp:
 
-  DynStr_end(&str1);
-  DynStr_end(&str2);
-  DynStr_end(&str3);
+  DynStr_end(&dStr1);
+  DynStr_end(&dStr2);
+  DynStr_end(&dStr3);
+  DynStr_end(&dStr4);
+  DynStr_end(&dStrSlice);
+
+  if (cStr != NULL) {
+    free(cStr);
+  }
 
   return retVal;
 }

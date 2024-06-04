@@ -18,7 +18,7 @@ int DynStr_init (DynStr_t ** dStr) {
     goto end;
   }
 
-  strContent = calloc(0, sizeof(char));
+  strContent = malloc(DYNSTR_EXTRA_CAPACITY);
 
   if (strContent == NULL) {
     retVal = -1;
@@ -26,6 +26,7 @@ int DynStr_init (DynStr_t ** dStr) {
   }
 
   (*dStr)->content = strContent;
+  (*dStr)->capacity = DYNSTR_EXTRA_CAPACITY;
 
   end:
 
@@ -58,7 +59,7 @@ int DynStr_end (DynStr_t ** dStr) {
   return retVal;
 }
 
-int DynStr_fromLiteral (DynStr_t ** dStr, char * srcLit) {
+int DynStr_fromCStr (DynStr_t ** dStr, char * srcCStr) {
   int retVal = 0;
   int resVal;
 
@@ -69,12 +70,22 @@ int DynStr_fromLiteral (DynStr_t ** dStr, char * srcLit) {
     goto end;
   }
 
-  resVal = DynStr_concatLiteral(*dStr, srcLit);
+  size_t srcSize = strlen(srcCStr);
+  size_t requiredCapacity = srcSize;
 
+  resVal = DynStr_reserve(*dStr, requiredCapacity);
+  
   if (resVal != 0) {
     retVal = -1;
     goto end;
   }
+
+  char * dest = (*dStr)->content;
+  char * src = srcCStr;
+
+  memmove(dest, src, srcSize);
+  
+  (*dStr)->count += srcSize;
 
   end:
 
@@ -96,12 +107,22 @@ int DynStr_fromDynStr (DynStr_t ** dStr, DynStr_t * srcDStr) {
     goto end;
   }
 
-  resVal = DynStr_concatDynStr(*dStr, srcDStr);
+  size_t srcSize = srcDStr->count;
+  size_t requiredCapacity = (*dStr)->count + srcSize;
 
+  resVal = DynStr_reserve(*dStr, requiredCapacity);
+  
   if (resVal != 0) {
     retVal = -1;
     goto end;
   }
+
+  char * dest = (*dStr)->content + (*dStr)->count;
+  char * src = srcDStr->content;
+
+  memmove(dest, src, srcSize);
+  
+  (*dStr)->count += srcSize;
 
   end:
 
@@ -112,18 +133,61 @@ int DynStr_fromDynStr (DynStr_t ** dStr, DynStr_t * srcDStr) {
   return retVal;
 }
 
-int DynStr_concatLiteral (DynStr_t * dStr, char * srcLit) {
+int DynStr_fromDynStrOpt (DynStr_t ** dStr, DynStr_t * srcDStr, DynStrOptions_t opt) {
   int retVal = 0;
   int resVal;
 
-  size_t srcSize = strlen(srcLit);
+  if (opt.offset + opt.count > srcDStr->count) {
+    retVal = -1;
+    goto end;
+  }
 
-  resVal = DynStr_concat(dStr, srcLit, srcSize);
+  resVal = DynStr_init(dStr);
 
   if (resVal != 0) {
     retVal = -1;
     goto end;
   }
+
+  resVal = DynStr_reserve(*dStr, opt.count);
+
+  if (resVal != 0) {
+    retVal = -1;
+    goto end;
+  }
+
+  char * dest = (*dStr)->content;
+  char * src = srcDStr->content + opt.offset;  
+
+  memmove(dest, src, opt.count);
+  
+  (*dStr)->count = opt.count;
+
+  end:
+
+  return retVal;
+}
+
+int DynStr_concatCStr (DynStr_t * dStr, char * srcCStr) {
+  int retVal = 0;
+  int resVal;
+
+  size_t srcSize = strlen(srcCStr);
+  size_t requiredCapacity = dStr->count + srcSize;
+
+  resVal = DynStr_reserve(dStr, requiredCapacity);
+  
+  if (resVal != 0) {
+    retVal = -1;
+    goto end;
+  }
+
+  char * dest = dStr->content + dStr->count;
+  char * src = srcCStr;
+
+  memmove(dest, src, srcSize);
+  
+  dStr->count += srcSize;
 
   end:
 
@@ -134,22 +198,38 @@ int DynStr_concatDynStr (DynStr_t * dStr, DynStr_t * srcDStr) {
   int retVal = 0;
   int resVal;
 
-  resVal = DynStr_concat(dStr, srcDStr->content, srcDStr->count);
+  size_t srcSize = srcDStr->count;
+  size_t requiredCapacity = dStr->count + srcSize;
 
+  resVal = DynStr_reserve(dStr, requiredCapacity);
+  
   if (resVal != 0) {
     retVal = -1;
     goto end;
   }
+
+  char * dest = dStr->content + dStr->count;
+  char * src = srcDStr->content;
+
+  memmove(dest, src, srcSize);
+  
+  dStr->count += srcSize;
 
   end:
 
   return retVal;
 }
 
-int DynStr_concat (DynStr_t * dStr, char * src, size_t srcSize) {
+int DynStr_concatDynStrOpt (DynStr_t * dStr, DynStr_t * srcDStr, DynStrOptions_t opt) {
   int retVal = 0;
   int resVal;
 
+  if (opt.offset + opt.count > srcDStr->count) {
+    retVal = -1;
+    goto end;
+  }
+
+  size_t srcSize = opt.count;
   size_t requiredCapacity = dStr->count + srcSize;
 
   resVal = DynStr_reserve(dStr, requiredCapacity);
@@ -159,7 +239,11 @@ int DynStr_concat (DynStr_t * dStr, char * src, size_t srcSize) {
     goto end;
   }
 
-  memmove(dStr->content + dStr->count, src, srcSize);
+  char * dest = dStr->content + dStr->count;
+  char * src = srcDStr->content + opt.offset;  
+
+  memmove(dest, src, srcSize);
+  
   dStr->count += srcSize;
 
   end:
@@ -171,7 +255,7 @@ int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity) {
   int retVal = 0;
 
   if (requiredCapacity > dStr->capacity) {
-    char * newContent = realloc(dStr->content, requiredCapacity);
+    char * newContent = realloc(dStr->content, requiredCapacity + DYNSTR_EXTRA_CAPACITY);
     
     if (newContent == NULL) {
       retVal = -1;
@@ -179,7 +263,7 @@ int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity) {
     }
 
     dStr->content = newContent;
-    dStr->capacity = requiredCapacity;
+    dStr->capacity = requiredCapacity + DYNSTR_EXTRA_CAPACITY;
   }
 
   end:
@@ -203,18 +287,22 @@ int DynStr_compare (DynStr_t * dStr1, DynStr_t * dStr2, int * result) {
   return retVal;
 }
 
-int DynStr_ensureNullTermination(DynStr_t *dStr) {
+int DynStr_toCStr (DynStr_t * dStr, char ** destCStr) {
   int retVal = 0;
-  int resVal;
 
-  resVal = DynStr_reserve(dStr, dStr->count + 1);
+  *destCStr = malloc(dStr->count + 1);
 
-  if (resVal != 0) {
+  if (*destCStr == NULL) {
     retVal = -1;
     goto end;
   }
 
-  dStr->content[dStr->count] = '\0';
+  char * dest = *destCStr;
+  char * src = dStr->content;
+
+  memmove(dest, src, dStr->count);
+
+  (*destCStr)[dStr->count] = '\0';
 
   end:
 
