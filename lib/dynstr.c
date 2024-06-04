@@ -251,26 +251,6 @@ int DynStr_concatDynStrOpt (DynStr_t * dStr, DynStr_t * srcDStr, DynStrOptions_t
   return retVal;
 }
 
-int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity) {
-  int retVal = 0;
-
-  if (requiredCapacity > dStr->capacity) {
-    char * newContent = realloc(dStr->content, requiredCapacity + DYNSTR_EXTRA_CAPACITY);
-    
-    if (newContent == NULL) {
-      retVal = -1;
-      goto end; 
-    }
-
-    dStr->content = newContent;
-    dStr->capacity = requiredCapacity + DYNSTR_EXTRA_CAPACITY;
-  }
-
-  end:
-  
-  return retVal;
-}
-
 int DynStr_compare (DynStr_t * dStr1, DynStr_t * dStr2, int * result) {
   int retVal = 0;
 
@@ -309,3 +289,22 @@ int DynStr_toCStr (DynStr_t * dStr, char ** destCStr) {
   return retVal;
 }
 
+int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity) {
+  int retVal = 0;
+
+  if (requiredCapacity > dStr->capacity) {
+    char * newContent = realloc(dStr->content, requiredCapacity + DYNSTR_EXTRA_CAPACITY);
+    
+    if (newContent == NULL) {
+      retVal = -1;
+      goto end; 
+    }
+
+    dStr->content = newContent;
+    dStr->capacity = requiredCapacity + DYNSTR_EXTRA_CAPACITY;
+  }
+
+  end:
+  
+  return retVal;
+}

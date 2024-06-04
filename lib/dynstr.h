@@ -32,9 +32,9 @@ int DynStr_concatCStr (DynStr_t * dStr, char * srcCStr);
 int DynStr_concatDynStr (DynStr_t * dStr, DynStr_t * srcDStr);
 int DynStr_concatDynStrOpt (DynStr_t * dStr, DynStr_t * srcDStr, DynStrOptions_t opt);
 
-int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity);
 int DynStr_compare (DynStr_t * dStr1, DynStr_t * dStr2, int * result);
-
 int DynStr_toCStr (DynStr_t * dStr, char ** destCStr);
+
+int DynStr_reserve (DynStr_t * dStr, size_t requiredCapacity);
 
 #endif /* _DYNSTR_H_ */
