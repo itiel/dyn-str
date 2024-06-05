@@ -14,7 +14,7 @@ A simple C library for working with dynamically allocated strings.
 
 To use this library, first include the [`dynstr.h`](/lib/dynstr.h) and [`dynstr.c`](/lib/dynstr.c) files in your project (located in the [`lib`](/lib) directory), then compile them together with your source files.
 
-For usage examples, refer to the [demo](/demo.c) and [test](/test.c) programs included in the project. 
+For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs included in the project.
 
 You can compile and run them like this:
 
