@@ -10,11 +10,9 @@ A simple C library for working with dynamically allocated strings.
 - Compare dynamic strings
 - Automatically manage memory allocation and resizing
 
-## Installation
+## Usage
 
 To use this library, first include the [`dynstr.h`](/lib/dynstr.h) and [`dynstr.c`](/lib/dynstr.c) files in your project (located in the [`lib`](/lib) directory), then compile them together with your source files.
-
-## Usage
 
 For usage examples, refer to the [demo](/demo.c) and [test](/test.c) programs included in the project. 
 
