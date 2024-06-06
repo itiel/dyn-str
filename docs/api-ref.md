@@ -4,7 +4,7 @@
 
 This reference provides a detailed overview of the functions and types defined in [`dynstr.h`](/lib/dynstr.h). 
 
-For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs included in the project.
+For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs provided in the project.
 
 ## Terminology
 

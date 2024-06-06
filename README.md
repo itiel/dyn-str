@@ -2,21 +2,13 @@
 
 A simple C library for working with dynamically allocated strings.
 
-## Features
-
-- Create dynamic strings from C strings or other dynamic strings
-- Create C strings and string slices from dynamic strings
-- Concatenate literals or other dynamic strings
-- Compare dynamic strings
-- Automatically manage memory allocation and resizing
-
 ## Usage
 
-To use this library, first include the [`dynstr.h`](/lib/dynstr.h) and [`dynstr.c`](/lib/dynstr.c) files in your project (located in the [`lib`](/lib) directory), then compile them together with your source files.
+Include the [`dynstr.h`](/lib/dynstr.h) and [`dynstr.c`](/lib/dynstr.c) files in your project (located in the [`lib`](/lib) directory), then compile them with your source files.
 
-For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs included in the project.
+For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs provided in the project.
 
-You can compile and run them like this:
+You may compile and execute them like this:
 
 ```bash
 cc -o demo demo.c lib/dynstr.c 
@@ -26,7 +18,7 @@ cc -o test test.c lib/dynstr.c
 ./test 
 ```
 
-For a more in depth explanation of the API, please see the [API Reference](/docs/api.md).
+For a more in depth explanation of the API, please refer to the [API Reference](/docs/api-ref.md).
 
 ## License
 
