@@ -16,27 +16,30 @@ int main () {
   
   int result;
 
-  printf("== DynStr Demo ==\n\n");
+  printf("== DynStr Test ==\n\n");
 
   printf("Dynamic string creation and destruction\n");
+  fflush(stdout);
 
   assert(DynStr_init(&dStr1) == 0);
   assert(dStr1->count == 0);
   assert(DynStr_end(&dStr1) == 0);
   assert(dStr1 == NULL);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Dynamic string creation from C string\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Hello, World!") == 0);
   assert(dStr1->count > 0);
   assert(memcmp(dStr1->content, "Hello, World!", dStr1->count) == 0);
   assert(DynStr_end(&dStr1) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Dynamic string creation from another dynamic string\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Dynamica allocation!") == 0);
   assert(DynStr_fromDynStr(&dStr2, dStr1) == 0);
@@ -45,9 +48,10 @@ int main () {
   assert(DynStr_end(&dStr1) == 0);
   assert(DynStr_end(&dStr2) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Dynamic string creation from another dynamic string with options\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Not a C string.") == 0);
   assert(
@@ -60,18 +64,20 @@ int main () {
   assert(DynStr_end(&dStr1) == 0);
   assert(DynStr_end(&dStr2) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Concatenation of C string to dynamic string\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Segmentation") == 0);
   assert(DynStr_concatCStr(dStr1, " fault.") == 0);
   assert(memcmp(dStr1->content, "Segmentation fault.", dStr1->count) == 0);
   assert(DynStr_end(&dStr1) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Concatenation of dynamic string to another dynamic string\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Heap") == 0);
   assert(DynStr_fromCStr(&dStr2, " allocation.") == 0);
@@ -80,9 +86,10 @@ int main () {
   assert(DynStr_end(&dStr1) == 0);
   assert(DynStr_end(&dStr2) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Concatenation of dynamic string to another dynamic string with options\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "String") == 0);
   assert(DynStr_fromCStr(&dStr2, " concatenation.") == 0);
@@ -96,9 +103,10 @@ int main () {
   assert(DynStr_end(&dStr1) == 0);
   assert(DynStr_end(&dStr2) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Dynamic strings comparison\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "Memory leak.") == 0);
   assert(DynStr_fromCStr(&dStr2, "Memory leak.") == 0);
@@ -107,9 +115,10 @@ int main () {
   assert(DynStr_end(&dStr1) == 0);
   assert(DynStr_end(&dStr2) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("C string creation from dynamic string\n");
+  fflush(stdout);
 
   assert(DynStr_fromCStr(&dStr1, "String copy.") == 0);
   assert(DynStr_toCStr(dStr1, &cStr) == 0);
@@ -119,9 +128,10 @@ int main () {
 
   free(cStr);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("Dynamic string memory reservation\n");
+  fflush(stdout);
 
   assert(DynStr_init(&dStr1) == 0);
   assert((result = (int) dStr1->capacity) == 0 || result > 0);
@@ -129,7 +139,7 @@ int main () {
   assert(dStr1->capacity > result);
   assert(DynStr_end(&dStr1) == 0);
   
-  printf("Result: ✅\n");
+  printf("Result: ✅\n\n");
 
   printf("All tests passed.\n");
 
