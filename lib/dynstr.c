@@ -32,7 +32,7 @@ int DynStr_init (DynStr_t ** dStr) {
 
   if (retVal != 0) {
     if (strContent != NULL) {
-      free((*dStr)->content);
+      free(strContent);
     }
 
     if (*dStr != NULL) {
