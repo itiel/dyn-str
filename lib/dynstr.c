@@ -6,6 +6,8 @@
 
 #include "dynstr.h"
 
+#define DYNSTR_EXTRA_CAPACITY 16
+
 int DynStr_init (DynStr_t ** dStr) {
   int retVal = 0;
 

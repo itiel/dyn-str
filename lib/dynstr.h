@@ -5,8 +5,6 @@
 
 #include <stddef.h>
 
-#define DYNSTR_EXTRA_CAPACITY 16
-
 typedef struct DynStr_t DynStr_t;
 typedef struct DynStrOptions_t DynStrOptions_t;
 
