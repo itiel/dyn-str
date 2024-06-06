@@ -16,6 +16,8 @@ int main () {
   
   int result;
 
+  printf("== DynStr Demo ==\n\n");
+
   printf("Dynamic string creation and destruction\n");
 
   assert(DynStr_init(&dStr1) == 0);

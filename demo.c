@@ -1,8 +1,24 @@
-// demo.c 
-
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include "lib/dynstr.h"
+
+void DynStr_print (char * label, DynStr_t * dStr) {
+  if (dStr == NULL) {
+    printf("%s = Null\n\n", label);
+  } else {
+    printf(
+      "%s = (count: %zu, capacity: %zu, content:", 
+      label, dStr->count, dStr->capacity
+    );
+
+    if (dStr->count) {
+      printf("\n  %.*s\n", (int) dStr->count, dStr->content);
+    }
+
+    printf(")\n\n");
+  }
+}
 
 int main () {
   int retVal = 0;
@@ -11,129 +27,160 @@ int main () {
   DynStr_t * dStr2 = NULL;
   DynStr_t * dStr3 = NULL;
   DynStr_t * dStr4 = NULL;
-  DynStr_t * dStrSlice = NULL;
   char * cStr = NULL;
+  int result;
 
-  int compareResult;
-
-  printf("Creating a DynStr from a C string literal.\n");
-
-  if (DynStr_fromCStr(&dStr1, "Hello, dynamic strings!") != 0) {
-    fprintf(stderr, "ERROR: Failed to create dStr1.\n");
-    
-    retVal = -1;
-    goto cleanUp;
-  }
-
-  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
-
-  printf("Creating another DynStr from a C string literal.\n");
-
-  if (DynStr_fromCStr(&dStr2, " Another dynamic string!") != 0) {
-    fprintf(stderr, "ERROR: Failed to create dStr2.\n");
-
-    retVal = -1;
-    goto cleanUp;
-  }
-
-  printf("dStr2: %.*s\n\n", (int) dStr2->count, dStr2->content);
-
-  printf("Concatenating dStr2 to dStr1.\n");
-
-  if (DynStr_concatDynStr(dStr1, dStr2) != 0) {
-    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr1.\n");
-    
-    retVal = -1;
-    goto cleanUp;
-  }
+  printf("== DynStr Demo ==\n\n");
   
-  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
+  printf("Let's go on a demo journey.\n\n");
 
-  printf("Concatenating part of dStr2 to dStr1.\n");
+  printf("Starting with an empty DynStr, dStr1.\n\n");
 
-  if (
-    DynStr_concatDynStrOpt(
-      dStr1, dStr2, (DynStrOptions_t) {
-        .offset = 16, 
-        .count = 8, 
-      }) != 0
-  ) {
-    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr1.\n");
-    
+  DynStr_print("dStr1", dStr1);
+
+  printf("Now, let's breathe life into it by initializing it with no source.\n\n");
+
+  if (DynStr_init(&dStr1) != 0) {
+    fprintf(stderr, "ERROR: Failed to initialize dStr1.\n");
     retVal = -1;
     goto cleanUp;
   }
+
+  DynStr_print("dStr1", dStr1);
+
+  printf("Just for fun, let's finalize it immediately.\n\n");
+
+  DynStr_end(&dStr1);
   
-  printf("dStr1: %.*s\n\n", (int) dStr1->count, dStr1->content);
+  DynStr_print("dStr1", dStr1);
 
-  printf("Creating a slice from dStr1.\n");
+  printf("Let's revive dStr1 with a C string: 'Oranges'.\n\n");
 
-  if (
-    DynStr_fromDynStrOpt(
-      &dStrSlice, dStr1, (DynStrOptions_t) {
-        .offset = 7, 
-        .count = 7, 
-      }) != 0
-  ) {
-    fprintf(stderr, "ERROR: Failed to create slice from dStr1.\n");
-    
+  if (DynStr_fromCStr(&dStr1, "Oranges") != 0) {
+    fprintf(stderr, "ERROR: Failed to initialize dStr1.\n");
     retVal = -1;
     goto cleanUp;
   }
 
-  printf("dStrSlice: %.*s\n\n", (int) dStrSlice->count, dStrSlice->content);
+  DynStr_print("dStr1", dStr1);
 
-  printf("Creating another DynStr from the slice.\n");
+  printf("Time to spice things up! Adding ', Bananas' to dStr1.\n\n");
 
-  if (DynStr_fromDynStr(&dStr3, dStrSlice) != 0) {
-    fprintf(stderr, "ERROR: Failed to create dStr3 from dStrSlice.\n");
-    
+  if (DynStr_concatCStr(dStr1, ", Bananas") != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate C string to dStr1.\n");
     retVal = -1;
     goto cleanUp;
   }
 
-  printf("dStr3: %.*s\n\n", (int) dStr3->count, dStr3->content);
+  DynStr_print("dStr1", dStr1);
 
-  printf("Comparing the last 2.\n");
+  printf("Introducing dStr2, created from the dStr1.\n\n");
 
-  if (DynStr_compare(dStrSlice, dStr3, &compareResult) != 0) {
-    fprintf(stderr, "ERROR: Failed to compare dStrSlice and dStr3.\n");
-
+  if (DynStr_fromDynStr(&dStr2, dStr1) != 0) {
+    fprintf(stderr, "ERROR: Failed to initialize dStr2.\n");
     retVal = -1;
     goto cleanUp;
   }
 
-  printf("dStrSlice == dStr3: %s\n\n", compareResult ? "Equal" : "Not Equal");
+  DynStr_print("dStr2", dStr2);
 
-  printf("Creating one last DynStr from a C string literal.\n");
+  printf("Adding more flavor: ', Apples and Pears.' to dStr2.\n\n");
 
-  if (DynStr_fromCStr(&dStr4, "Thank you :)") != 0) {
-    fprintf(stderr, "ERROR: Failed to create dStr4.\n");
-    
+  if (DynStr_concatCStr(dStr2, ", Apples and Pears. ") != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate C string to dStr2.\n");
     retVal = -1;
     goto cleanUp;
   }
 
-  printf("dStr4: %.*s\n\n", (int) dStr4->count, dStr4->content);
+  DynStr_print("dStr2", dStr2);
 
-  printf("Finally, creating a C string from dStr4.\n");
+  printf("Let's take a slice of dStr2 and add it to dStr1.\n\n");
 
-  if (DynStr_toCStr(dStr4, &cStr) != 0) {
-    fprintf(stderr, "ERROR: Failed to create cStr from dStr4.\n");
-    
+  if (DynStr_concatDynStrOpt(dStr1, dStr2, (DynStrOptions_t) { .offset = 24, .count = 11 }) != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr1.\n");
     retVal = -1;
     goto cleanUp;
   }
 
-  printf("cStr: %s\n\n", cStr);
+  DynStr_print("dStr1", dStr1);
 
-  cleanUp:
+  printf("For the grand finale, let's concatenate dStr2 to itself.\n\n");
 
+  if (DynStr_concatDynStr(dStr2, dStr2) != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to itself.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  DynStr_print("dStr2", dStr2);
+
+  printf("Creating dStr3 from a part of dStr2. Watch its count and capacity!\n\n");
+
+  if (DynStr_fromDynStrOpt(&dStr3, dStr2, (DynStrOptions_t) { .offset = 0, .count = 16 }) != 0) {
+    fprintf(stderr, "ERROR: Failed to initialize dStr3.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  DynStr_print("dStr3", dStr3);
+
+  printf("Let's ensure dStr3 is ready for more data by reserving additional memory.\n\n");
+
+  if (DynStr_reserve(dStr3, dStr3->capacity + 5) != 0) {
+    fprintf(stderr, "ERROR: Failed to reserve memory for dStr3.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  DynStr_print("dStr3", dStr3);
+
+  printf("Adding more from dStr2 into dStr3.\n\n");
+
+  if (DynStr_concatDynStrOpt(dStr3, dStr2, (DynStrOptions_t) { .offset = 15, .count = 20 }) != 0) {
+    fprintf(stderr, "ERROR: Failed to concatenate dStr2 to dStr3.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  DynStr_print("dStr3", dStr3);
+
+  printf("Let's generate a C string (cStr) from dStr3.\n\n");
+
+  if (DynStr_toCStr(dStr3, &cStr) != 0) {
+    fprintf(stderr, "ERROR: Failed to convert dStr3 to C string.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  printf("cStr = %s\n\n", cStr);
+
+  printf("Now, we'll initialize dStr4 with cStr as the source.\n\n");
+
+  if (DynStr_fromCStr(&dStr4, cStr) != 0) {
+    fprintf(stderr, "ERROR: Failed to initialize dStr4.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  DynStr_print("dStr4", dStr4);
+
+  printf("Let's compare dStr3 and dStr4 to see if they're equal.\n\n");
+
+  if (DynStr_compare(dStr3, dStr4, &result) != 0) {
+    fprintf(stderr, "ERROR: Failed to compare dStr3 and dStr4.\n");
+    retVal = -1;
+    goto cleanUp;
+  }
+
+  printf("dStr3 == dStr4: %s\n\n", result ? "Equal" : "Not Equal");
+
+  printf("Our journey is complete!\n");
+
+cleanUp:
   DynStr_end(&dStr1);
   DynStr_end(&dStr2);
   DynStr_end(&dStr3);
   DynStr_end(&dStr4);
-  DynStr_end(&dStrSlice);
 
   if (cStr != NULL) {
     free(cStr);

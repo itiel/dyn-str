@@ -11,11 +11,9 @@ For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test
 You may compile and execute them like this:
 
 ```bash
-cc -o demo demo.c lib/dynstr.c 
-./demo 
+cc -o demo demo.c lib/dynstr.c && ./demo 
 
-cc -o test test.c lib/dynstr.c 
-./test 
+cc -o test test.c lib/dynstr.c && ./test 
 ```
 
 For a more in depth explanation of the API, please refer to the [API Reference](/docs/api-ref.md).
