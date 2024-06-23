@@ -1,7 +1,10 @@
+// demo.c
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include "lib/dynstr.h"
+
+#include "lib/dyn-str.h"
 
 void DynStr_print (char * label, DynStr_t * dStr) {
   if (dStr == NULL) {

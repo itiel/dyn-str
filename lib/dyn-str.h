@@ -1,4 +1,4 @@
-// dynstr.h
+// dyn-str.h
 
 #ifndef _DYNSTR_H_
 #define _DYNSTR_H_ 

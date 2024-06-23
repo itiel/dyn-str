@@ -2,7 +2,7 @@
 
 ## Overview
 
-This reference provides a detailed overview of the functions and types defined in [`dynstr.h`](/lib/dynstr.h). 
+This reference provides a detailed overview of the functions and types defined in [`dyn-str.h`](/lib/dyn-str.h). 
 
 For usage examples, please refer to the [`demo.c`](/demo.c) and [`test.c`](/test.c) programs provided in the project.
 

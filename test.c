@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 
-#include "lib/dynstr.h"
+#include "lib/dyn-str.h"
 
 int main () {
   DynStr_t * dStr1 = NULL;

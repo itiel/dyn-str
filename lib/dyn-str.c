@@ -1,10 +1,10 @@
-// dynstr.c
+// dyn-str.c
 
 #include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
 
-#include "dynstr.h"
+#include "dyn-str.h"
 
 #define DYNSTR_EXTRA_CAPACITY 16
 
